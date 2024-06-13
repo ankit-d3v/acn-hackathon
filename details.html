@@ -27,6 +27,11 @@
         p {
             margin: 10px 0;
         }
+        img {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 20px;
+        }
         button {
             padding: 10px 20px;
             border: none;
@@ -49,6 +54,7 @@
     <p id="age"></p>
     <p id="salary"></p>
     <p id="currentPension"></p>
+    <img id="photo" src="" alt="Uploaded Photo">
     <button onclick="goBack()">Go Back</button>
 </div>
 
@@ -58,12 +64,17 @@
         const name = urlParams.get('name');
         const age = urlParams.get('age');
         const salary = urlParams.get('salary');
-        const currentPension = urlParams.get('currentPension');
+        const currentPensionPercentage = urlParams.get('currentPension'); // Get as percentage
+        const photoUrl = urlParams.get('photoUrl');
+
+        // Calculate current pension as an actual number
+        const currentPension = (currentPensionPercentage / 100) * salary;
 
         document.getElementById('name').innerText = `Name: ${name}`;
         document.getElementById('age').innerText = `Age: ${age}`;
-        document.getElementById('salary').innerText = `Salary: ${salary}`;
-        document.getElementById('currentPension').innerText = `Current Pension: ${currentPension}`;
+        document.getElementById('salary').innerText = `Salary: $${salary}`;
+        document.getElementById('currentPension').innerText = `Current Pension: ${currentPensionPercentage}% of Salary ($${currentPension.toFixed(2)})`;
+        document.getElementById('photo').src = photoUrl;
     });
 
     function goBack() {
