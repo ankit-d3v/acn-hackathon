@@ -54,6 +54,7 @@
     <p id="age"></p>
     <p id="salary"></p>
     <p id="currentPension"></p>
+    <p id="pensionAdvice"></p>
     <img id="photo" src="" alt="Uploaded Photo">
     <button onclick="goBack()">Go Back</button>
 </div>
@@ -66,14 +67,16 @@
         const salary = urlParams.get('salary');
         const currentPensionPercentage = urlParams.get('currentPension'); // Get as percentage
         const photoUrl = urlParams.get('photoUrl');
+        const pensionAdvice = decodeURIComponent(urlParams.get('pensionAdvice'));
 
         // Calculate current pension as an actual number
         const currentPension = (currentPensionPercentage / 100) * salary;
 
         document.getElementById('name').innerText = `Name: ${name}`;
         document.getElementById('age').innerText = `Age: ${age}`;
-        document.getElementById('salary').innerText = `Salary: $${salary}`;
-        document.getElementById('currentPension').innerText = `Current Pension: ${currentPensionPercentage}% of Salary ($${currentPension.toFixed(2)})`;
+        document.getElementById('salary').innerText = `Salary: £${salary}`;
+        document.getElementById('currentPension').innerText = `Current Pension: ${currentPensionPercentage}% of Salary (£${currentPension.toFixed(2)})`;
+        document.getElementById('pensionAdvice').innerText = `Pension Advice: ${pensionAdvice}`;
         document.getElementById('photo').src = photoUrl;
     });
 

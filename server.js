@@ -2,9 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
+const { CohereClient } = require('cohere-ai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Set up Cohere AI client
+const cohere = new CohereClient({
+    token: "QqvH8wko3rpDwzqv00oGmI6BT4kQdRNXAFvBEBXT", // Replace with your actual API key
+});
 
 // Set up body-parser to handle form data
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,15 +32,35 @@ app.get('/', (req, res) => {
 });
 
 // Endpoint to handle user profile submission
-app.post('/profile', upload.single('photo'), (req, res) => {
+app.post('/profile', upload.single('photo'), async (req, res) => {
     const { name, age, salary, currentPension } = req.body;
     const photoUrl = req.file ? `/uploads/${req.file.filename}` : null; // Uploaded photo URL
-    res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}`);
+
+    try {
+        // Generate pension advice using Cohere
+        const response = await cohere.generate({
+            model: "command",
+            prompt: `give me pension advice for ${name}, ${age} years old, earning £${salary} with current pension ${currentPension}%\n`,
+            maxTokens: 300,
+            temperature: 0.9,
+            k: 0,
+            stopSequences: [],
+            returnLikelihoods: "NONE"
+        });
+
+        const pensionAdvice = response.generations[0].text;
+
+        // Redirect to details page with all details including pension advice
+        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}&pensionAdvice=${encodeURIComponent(pensionAdvice)}`);
+    } catch (error) {
+        console.error('Error generating pension advice:', error.message);
+        res.status(500).send('Error generating pension advice');
+    }
 });
 
 // Endpoint to display user profile details
 app.get('/details', (req, res) => {
-    const { name, age, salary, currentPension, photoUrl } = req.query;
+    const { name, age, salary, currentPension, photoUrl, pensionAdvice } = req.query;
     res.sendFile(path.join(__dirname, 'details.html'));
 });
 
