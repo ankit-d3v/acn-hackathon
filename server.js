@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
 
 // Endpoint to handle user profile submission
 app.post('/profile', upload.single('photo'), async (req, res) => {
-    const { name, age, salary, currentPension } = req.body;
+    const { name, age, salary, currentPension, gender} = req.body;
     const photoUrl = req.file ? `/uploads/${req.file.filename}` : null; // Uploaded photo URL
 
     const lumpSumPension = calculatePension(parseInt(age), parseInt(salary));
@@ -54,7 +54,7 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
         // Generate pension advice using Cohere
         const response = await cohere.generate({
             model: "command",
-            prompt: `give me pension advice for ${name}, ${age} years old, earning £${salary} with current pension ${lumpSumPension}%\n`,
+            prompt: `give me pension advice for ${name}, ${age} years old, earning £${salary} with current pension ${lumpSumPension}, gender ${gender}%\n`,
             maxTokens: 300,
             temperature: 0.9,
             k: 0,
@@ -68,7 +68,7 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
 
 
         // Redirect to details page with all details including pension advice and lump sum pension
-        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}&pensionAdvice=${encodeURIComponent(pensionAdvice)}&lumpSumPension=${lumpSumPension}`);
+        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}&pensionAdvice=${encodeURIComponent(pensionAdvice)}&lumpSumPension=${lumpSumPension}&gender=${gender}`);
     } catch (error) {
         console.error('Error generating pension advice:', error.message);
         res.status(500).send('Error generating pension advice');
@@ -77,7 +77,7 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
 
 // Endpoint to display user profile details
 app.get('/details', (req, res) => {
-    const { name, age, salary, currentPension, photoUrl, pensionAdvice, lumpSumPension } = req.query;
+    const { name, age, salary, currentPension, photoUrl, pensionAdvice, lumpSumPension, gender } = req.query;
     res.sendFile(path.join(__dirname, 'details.html'));
 });
 
