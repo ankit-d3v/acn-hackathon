@@ -27,6 +27,18 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+// Function to calculate pension based on years of work, salary, and age
+function calculatePension(age, annualSalary) {
+    const startWorkingAge = 20; // Starting age for work
+    const retirementAge = 65; // Retirement age
+    const yearsOfWork = age - startWorkingAge;
+    const monthlyPension = 0.02 * yearsOfWork * annualSalary;
+    const remainingYears = retirementAge - age;
+    const totalPension = monthlyPension * 12 * remainingYears;
+
+    return totalPension.toFixed(2); // Return total pension as a formatted string
+}
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -36,11 +48,13 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
     const { name, age, salary, currentPension } = req.body;
     const photoUrl = req.file ? `/uploads/${req.file.filename}` : null; // Uploaded photo URL
 
+    const lumpSumPension = calculatePension(parseInt(age), parseInt(salary));
+
     try {
         // Generate pension advice using Cohere
         const response = await cohere.generate({
             model: "command",
-            prompt: `give me pension advice for ${name}, ${age} years old, earning £${salary} with current pension ${currentPension}%\n`,
+            prompt: `give me pension advice for ${name}, ${age} years old, earning £${salary} with current pension ${lumpSumPension}%\n`,
             maxTokens: 300,
             temperature: 0.9,
             k: 0,
@@ -50,8 +64,11 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
 
         const pensionAdvice = response.generations[0].text;
 
-        // Redirect to details page with all details including pension advice
-        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}&pensionAdvice=${encodeURIComponent(pensionAdvice)}`);
+        // Calculate lump sum pension
+
+
+        // Redirect to details page with all details including pension advice and lump sum pension
+        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}&pensionAdvice=${encodeURIComponent(pensionAdvice)}&lumpSumPension=${lumpSumPension}`);
     } catch (error) {
         console.error('Error generating pension advice:', error.message);
         res.status(500).send('Error generating pension advice');
@@ -60,7 +77,7 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
 
 // Endpoint to display user profile details
 app.get('/details', (req, res) => {
-    const { name, age, salary, currentPension, photoUrl, pensionAdvice } = req.query;
+    const { name, age, salary, currentPension, photoUrl, pensionAdvice, lumpSumPension } = req.query;
     res.sendFile(path.join(__dirname, 'details.html'));
 });
 

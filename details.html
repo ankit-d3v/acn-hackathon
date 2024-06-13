@@ -55,6 +55,7 @@
     <p id="salary"></p>
     <p id="currentPension"></p>
     <p id="pensionAdvice"></p>
+    <p id="lumpSumPension"></p>
     <img id="photo" src="" alt="Uploaded Photo">
     <button onclick="goBack()">Go Back</button>
 </div>
@@ -68,6 +69,7 @@
         const currentPensionPercentage = urlParams.get('currentPension'); // Get as percentage
         const photoUrl = urlParams.get('photoUrl');
         const pensionAdvice = decodeURIComponent(urlParams.get('pensionAdvice'));
+        const lumpSumPension = urlParams.get('lumpSumPension');
 
         // Calculate current pension as an actual number
         const currentPension = (currentPensionPercentage / 100) * salary;
@@ -77,6 +79,7 @@
         document.getElementById('salary').innerText = `Salary: £${salary}`;
         document.getElementById('currentPension').innerText = `Current Pension: ${currentPensionPercentage}% of Salary (£${currentPension.toFixed(2)})`;
         document.getElementById('pensionAdvice').innerText = `Pension Advice: ${pensionAdvice}`;
+        document.getElementById('lumpSumPension').innerText = `Lump Sum Pension: £${lumpSumPension}`;
         document.getElementById('photo').src = photoUrl;
     });
 
