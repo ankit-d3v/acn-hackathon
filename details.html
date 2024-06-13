@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile Details</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #005b9a;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #004070;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>User Profile Details</h1>
+    <p id="name"></p>
+    <p id="age"></p>
+    <p id="salary"></p>
+    <p id="currentPension"></p>
+    <button onclick="goBack()">Go Back</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const age = urlParams.get('age');
+        const salary = urlParams.get('salary');
+        const currentPension = urlParams.get('currentPension');
+
+        document.getElementById('name').innerText = `Name: ${name}`;
+        document.getElementById('age').innerText = `Age: ${age}`;
+        document.getElementById('salary').innerText = `Salary: ${salary}`;
+        document.getElementById('currentPension').innerText = `Current Pension: ${currentPension}`;
+    });
+
+    function goBack() {
+        window.history.back();
+    }
+</script>
+</body>
+</html>

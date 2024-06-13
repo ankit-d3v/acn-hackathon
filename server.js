@@ -21,8 +21,13 @@ app.get('/', (req, res) => {
 // Endpoint to handle user profile submission
 app.post('/profile', (req, res) => {
     const { name, age, salary, currentPension } = req.body;
-    console.log(`Name: ${name}, Age: ${age}, Salary: ${salary}, Current Pension: ${currentPension}`);
-    res.json({ message: 'Profile data received', name, age, salary, currentPension });
+    res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}`);
+});
+
+// Endpoint to display user profile details
+app.get('/details', (req, res) => {
+    const { name, age, salary, currentPension } = req.query;
+    res.sendFile(path.join(__dirname, 'details.html'));
 });
 
 // Endpoint to handle photo upload and aging simulation
