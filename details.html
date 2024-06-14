@@ -69,12 +69,22 @@
         const salary = urlParams.get('salary');
         const currentPensionPercentage = urlParams.get('currentPension'); // Get as percentage
         const gender = urlParams.get('gender');
-        const photoUrl = urlParams.get('photoUrl');
         const pensionAdvice = decodeURIComponent(urlParams.get('pensionAdvice'));
         const lumpSumPension = urlParams.get('lumpSumPension');
+        const imageFolder = urlParams.get('imageFolder');
 
         // Calculate current pension as an actual number
         const currentPension = (currentPensionPercentage / 100) * salary;
+
+
+        // Set the image source based on gender and image folder
+        const genderImage = (gender === 'male') ? 'male_lavish.jpg' : 'female_lavish.jpg'; // Adjust filenames as per your actual image names
+        console.log("genderImage.....", genderImage)
+
+        const imageUrl = `${gender}/${genderImage}`;
+
+        console.log("imageUrl.....", imageUrl)
+
 
         document.getElementById('name').innerText = `Name: ${name}`;
         document.getElementById('age').innerText = `Age: ${age}`;
@@ -83,7 +93,7 @@
         document.getElementById('gender').innerText = `Gender: ${gender}`;
         document.getElementById('pensionAdvice').innerText = `Pension Advice: ${pensionAdvice}`;
         document.getElementById('lumpSumPension').innerText = `Lump Sum Pension: £${lumpSumPension}`;
-        document.getElementById('photo').src = photoUrl;
+        document.getElementById('photo').src = imageUrl;
     });
 
     function goBack() {

@@ -15,6 +15,7 @@ const cohere = new CohereClient({
 // Set up body-parser to handle form data
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static('source'));
 
 // Set up Multer for file uploads
 const storage = multer.diskStorage({
@@ -46,7 +47,7 @@ app.get('/', (req, res) => {
 // Endpoint to handle user profile submission
 app.post('/profile', upload.single('photo'), async (req, res) => {
     const { name, age, salary, currentPension, gender} = req.body;
-    const photoUrl = req.file ? `/uploads/${req.file.filename}` : null; // Uploaded photo URL
+   // const photoUrl = req.file ? `/uploads/${req.file.filename}` : null; // Uploaded photo URL
 
     const lumpSumPension = calculatePension(parseInt(age), parseInt(salary));
 
@@ -54,7 +55,7 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
         // Generate pension advice using Cohere
         const response = await cohere.generate({
             model: "command",
-            prompt: `give me pension advice for ${name}, ${age} years old, earning £${salary} with current pension ${lumpSumPension}, gender ${gender}%\n`,
+            prompt: `give ${name} pension advice, as a ${age} years old ${gender}, with a projected pension pot of £${lumpSumPension} at 65 generate advice above mentioning the following  do I have enough money saved - tell me how much more I need to save - give me next steps - tell me about UK state pension - make it personal`,
             maxTokens: 300,
             temperature: 0.9,
             k: 0,
@@ -68,7 +69,7 @@ app.post('/profile', upload.single('photo'), async (req, res) => {
 
 
         // Redirect to details page with all details including pension advice and lump sum pension
-        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&photoUrl=${photoUrl}&pensionAdvice=${encodeURIComponent(pensionAdvice)}&lumpSumPension=${lumpSumPension}&gender=${gender}`);
+        res.redirect(`/details?name=${name}&age=${age}&salary=${salary}&currentPension=${currentPension}&pensionAdvice=${encodeURIComponent(pensionAdvice)}&lumpSumPension=${lumpSumPension}&gender=${gender}`);
     } catch (error) {
         console.error('Error generating pension advice:', error.message);
         res.status(500).send('Error generating pension advice');
@@ -87,10 +88,10 @@ app.post('/age-photo', upload.single('photo'), (req, res) => {
     if (!photo) {
         return res.status(400).json({ error: 'No photo uploaded' });
     }
-    // Simulate calling the mock API for photo aging
-    console.log('Photo received, simulating aging...');
-    const agedPhotoUrl = `/uploads/${photo.filename}`;
-    res.json({ message: 'Photo aged successfully', agedPhotoUrl });
+    // // Simulate calling the mock API for photo aging
+    // console.log('Photo received, simulating aging...');
+    // const agedPhotoUrl = `/uploads/${photo.filename}`;
+    // res.json({ message: 'Photo aged successfully', agedPhotoUrl });
 });
 
 app.use('/uploads', express.static('uploads')); // Serve uploaded images
